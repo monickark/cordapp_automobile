@@ -1,9 +1,16 @@
 package com.template.contracts;
 
+import com.template.states.CarState;
 import com.template.states.TemplateState;
+import net.corda.core.contracts.Command;
 import net.corda.core.contracts.CommandData;
 import net.corda.core.contracts.Contract;
+import net.corda.core.contracts.ContractState;
 import net.corda.core.transactions.LedgerTransaction;
+import org.jetbrains.annotations.NotNull;
+
+import java.security.PublicKey;
+import java.util.List;
 
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 
@@ -11,35 +18,48 @@ import static net.corda.core.contracts.ContractsDSL.requireThat;
 // * Contract *
 // ************
 public class CarContract implements Contract {
-    // This is used to identify our contract when building a transaction.
-    public static final String ID = "com.template.contracts.TemplateContract";
+    public static final String ID = "com.template.contracts.CarContract";
 
-    // A transaction is valid if verify() method of the contract of all the transaction's input and output states
-    // does not throw an exception.
     @Override
-    public void verify(LedgerTransaction tx) {
+    public void verify(@NotNull LedgerTransaction tx) throws IllegalArgumentException {
+        if(tx.getCommands().size() !=0) {
+            throw new IllegalArgumentException("There can be only one cmd...")
+        }
+        Command command = tx.getCommand(0);
+        CommandData commandType = command.getValue();
+        List<PublicKey> requiredSigners = command.getSigners();
 
-        /* We can use the requireSingleCommand function to extract command data from transaction.
-         * However, it is possible to have multiple commands in a single transaction.*/
-        //final CommandWithParties<Commands> command = requireSingleCommand(tx.getCommands(), Commands.class);
-        final CommandData commandData = tx.getCommands().get(0).getValue();
+        if(commandType instanceof Shipment) {
 
-        if (commandData instanceof Commands.Send) {
-            //Retrieve the output state of the transaction
-            TemplateState output = tx.outputsOfType(TemplateState.class).get(0);
+            //shape rules
+            if(tx.getInputStates().size() !=0){
+                throw new IllegalArgumentException("There cannot be input states");
+            }
+            if(tx.getOutputStates().size() !=0){
+                throw new IllegalArgumentException("Only vehicle can be at a time");
+            }
 
-            //Using Corda DSL function requireThat to replicate conditions-checks
-            requireThat(require -> {
-                require.using("No inputs should be consumed when sending the Hello-World message.", tx.getInputStates().isEmpty());
-                require.using("The message must be Hello-World", output.getMsg().equals("Hello-World"));
-                return null;
-            });
+            //content rules
+            ContractState outputState = tx.getOutput(0);
+            if(!(outputState instanceof CarState)) {
+                throw new IllegalArgumentException("Output can only be of type car state");
+            }
+
+            CarState carState = (CarState) outputState;
+            if(carState.getModel().equals("Cybertruck")){
+                throw new IllegalArgumentException("Only a cyber truck can be shipped");
+            }
+
+            //Signer rules
+            PublicKey manufacturerKey = carState.getManufacturer().getOwningKey();
+            if(!(requiredSigners.contains(manufacturerKey))) {
+                throw new IllegalArgumentException("Manufacturer must sign the tx")
+            }
+
         }
     }
 
-    // Used to indicate the transaction's intent.
-    public interface Commands extends CommandData {
-        //In our hello-world app, We will only have one command.
-        class Send implements Commands {}
+    public static class Shipment implements CommandData {
+
     }
 }
