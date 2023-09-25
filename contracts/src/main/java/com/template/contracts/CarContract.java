@@ -18,12 +18,12 @@ import static net.corda.core.contracts.ContractsDSL.requireThat;
 // * Contract *
 // ************
 public class CarContract implements Contract {
-    public static final String ID = "com.template.contracts.CarContract";
+    public static final String CAR_CONTRACT_ID = "com.template.contracts.CarContract";
 
     @Override
     public void verify(@NotNull LedgerTransaction tx) throws IllegalArgumentException {
-        if(tx.getCommands().size() !=0) {
-            throw new IllegalArgumentException("There can be only one cmd...")
+        if(tx.getCommands().size() !=1) {
+            throw new IllegalArgumentException("There can be only one cmd...");
         }
         Command command = tx.getCommand(0);
         CommandData commandType = command.getValue();
@@ -53,7 +53,7 @@ public class CarContract implements Contract {
             //Signer rules
             PublicKey manufacturerKey = carState.getManufacturer().getOwningKey();
             if(!(requiredSigners.contains(manufacturerKey))) {
-                throw new IllegalArgumentException("Manufacturer must sign the tx")
+                throw new IllegalArgumentException("Manufacturer must sign the tx");
             }
 
         }

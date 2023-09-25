@@ -1,5 +1,14 @@
 # 1. BUILD APPLICATION
 ./gradlew clean deployNodes
+build/nodes/runnodes
+build/nodes/runnodes.bat
 ~ BUILD SUCCESSFUL
 
-# 2.UPDATE NODE IN BUILD.GRADLE
+# 2. EXECUTE FLOWS
+start ShipmentFlow model: Cybertruck , owner: "O=Microsoft,L=Billgates,C=US"
+
+# 3. SEARCH VAULT
+run vaultQuery contractStateType: com.template.states.CarSate
+
+
+
