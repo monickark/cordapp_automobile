@@ -23,6 +23,7 @@ public class ShipmentFlow extends FlowLogic<SignedTransaction> {
     public ShipmentFlow(String model, Party owner) {
         this.model = model;
         this.owner = owner;
+        System.out.println("Inside constructor");
     }
 
     @Override
@@ -33,6 +34,7 @@ public class ShipmentFlow extends FlowLogic<SignedTransaction> {
     @Suspendable
     @Override
     public SignedTransaction call() throws FlowException {
+        System.out.println("name is equals: " + getOurIdentity().getName());
         if(getOurIdentity().getName().equals("Microsoft")) {
             System.out.println("Identity verified");
         } else {

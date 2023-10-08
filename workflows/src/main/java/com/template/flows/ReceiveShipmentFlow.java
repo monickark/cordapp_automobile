@@ -13,7 +13,6 @@ import static com.template.contracts.CarContract.CAR_CONTRACT_ID;
 
 @InitiatedBy(ShipmentFlow.class)
 public class ReceiveShipmentFlow extends FlowLogic<SignedTransaction> {
-
     private FlowSession otherPartySession;
     public ReceiveShipmentFlow(FlowSession otherPartySession) {
         this.otherPartySession = otherPartySession;
@@ -23,7 +22,6 @@ public class ReceiveShipmentFlow extends FlowLogic<SignedTransaction> {
     @Override
     public SignedTransaction call() throws FlowException {
         System.out.println("Received Shipment");
-
         return subFlow(new ReceiveFinalityFlow(otherPartySession));
     }
 }

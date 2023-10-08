@@ -5,10 +5,12 @@ import net.corda.core.identity.CordaX500Name;
 import net.corda.testing.core.TestIdentity;
 import net.corda.testing.node.MockServices;
 import org.junit.Test;
+import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Arrays;
 
 import static net.corda.testing.node.NodeTestUtils.ledger;
+import static net.corda.testing.node.NodeTestUtils.transaction;
 
 
 public class ContractTests {
@@ -17,21 +19,23 @@ public class ContractTests {
     TestIdentity bob = new TestIdentity(new CordaX500Name("Alice",  "TestLand",  "US"));
 
     @Test
-    public void issuerAndRecipientCannotHaveSameEmail() {
-        TemplateState state = new TemplateState("Hello-World",alice.getParty(),bob.getParty());
-        ledger(ledgerServices, l -> {
-            l.transaction(tx -> {
-                tx.input(TemplateContract.ID, state);
-                tx.output(TemplateContract.ID, state);
-                tx.command(alice.getPublicKey(), new TemplateContract.Commands.Send());
-                return tx.fails(); //fails because of having inputs
+    public void TokenContractImplementsContract() {
+        assert(new TokenContract() instanceof Contract);
+    }
+    @Test
+    public void tokenCOntractRequiresZeroInputsInTheTransaction() {
+        transaction(ledgerServices, tx -> {
+                tx.input(TokenContract.ID, tokenState);
+                tx.output(TokenContract.ID, tokenState);
+                tx.command(Arrays.asList(alice.getPublicKey(), bob.getPublicKey()));
+                tx.fails();
+                return null;
             });
-            l.transaction(tx -> {
-                tx.output(TemplateContract.ID, state);
-                tx.command(alice.getPublicKey(), new TemplateContract.Commands.Send());
-                return tx.verifies();
-            });
+        transaction(ledgerServices, tx -> {
+                tx.output(TokenContract.ID, state);
+                tx.command(Arrays.asList(alice.getPublicKey(), bob.getPublicKey()));
+                tx.verifies();
             return null;
-        });
+            });
     }
 }
