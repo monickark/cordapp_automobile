@@ -9,7 +9,6 @@ import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
-import net.corda.core.contracts.CommandData;
 
 import java.util.Arrays;
 
@@ -21,10 +20,12 @@ public class TokenIssueFlow {
     @StartableByRPC
     public static class TokenIssueFlowInitiator extends FlowLogic<SignedTransaction> {
         private final Party owner;
+        private final Party notary;
         private final int amount;
 
-        public TokenIssueFlowInitiator(Party owner, int amount) {
+        public TokenIssueFlowInitiator(Party owner, Party notary, int amount) {
             this.owner = owner;
+            this.notary = notary;
             this.amount = amount;
         }
 
@@ -40,7 +41,7 @@ public class TokenIssueFlow {
         public SignedTransaction call() throws FlowException {
 
             /** Explicit selection of notary by CordaX500Name - argument can by coded in flows or parsed from config (Preferred)*/
-            final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB"));
+            //final Party notary = getServiceHub().getNetworkMapCache().getNotary(new CordaX500Name("Notary", "Paris","US"));
             // We get a reference to our own identity.
             Party issuer = getOurIdentity();
 
@@ -75,6 +76,10 @@ public class TokenIssueFlow {
 
             // We get the transaction notarised and recorded automatically by the platform.
             return subFlow(new FinalityFlow(fullySignedTransaction, singletonList(session)));
+        }
+
+        public Party getNotary() {
+            return notary;
         }
     }
 
