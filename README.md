@@ -52,5 +52,13 @@
 
 
 
+# SHIPMENT FLOW
+In microsoft node: start ShipmentFlow model: Cybertruck , owner: "O=Google,L=London,C=GB"
+![img_5.png](img_5.png)
+run vaultQuery contractStateType: com.template.states.CarState
+![img_4.png](img_4.png)
+
+
+
 
 - 

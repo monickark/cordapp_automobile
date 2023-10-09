@@ -1,8 +1,6 @@
 package com.template;
 
 import com.google.common.collect.ImmutableList;
-import com.template.flows.TemplateFlow;
-import com.template.states.TemplateState;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.node.services.Vault;
 import net.corda.core.node.services.vault.QueryCriteria;

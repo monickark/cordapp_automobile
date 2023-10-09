@@ -5,7 +5,8 @@ build/nodes/runnodes.bat
 ~ BUILD SUCCESSFUL
 
 # 2. EXECUTE FLOWS
-start ShipmentFlow model: Cybertruck , owner: "O=Microsoft,L=Billgates,C=US"
+start ShipmentFlow model: Cybertruck , owner: "O=Microsoft,L=London,C=US"
+start ShipmentFlow model: Cybertruck , owner: "O=Google,L=London,C=GB"
 
 # 3. SEARCH VAULT
 run vaultQuery contractStateType: com.template.states.CarSate

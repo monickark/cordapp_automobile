@@ -35,11 +35,11 @@ public class ShipmentFlow extends FlowLogic<SignedTransaction> {
     @Override
     public SignedTransaction call() throws FlowException {
         System.out.println("name is equals: " + getOurIdentity().getName());
-        if(getOurIdentity().getName().equals("Microsoft")) {
-            System.out.println("Identity verified");
-        } else {
-            throw new FlowException("This is not Microsoft");
-        }
+//        if(getOurIdentity().getName().equals("O=Microsoft, L=London, C=US")) {
+//            System.out.println("Identity verified");
+//        } else {
+//            throw new FlowException("This is not Microsoft");
+//        }
         Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
         CarState outputState = new CarState(model,owner,getOurIdentity());
         TransactionBuilder txBuilder = new TransactionBuilder(notary)
