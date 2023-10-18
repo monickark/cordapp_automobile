@@ -16,3 +16,6 @@ run vaultQuery contractStateType: com.template.states.CarState
 
 start TokenIssueFlowInitiator owner: "O=Microsoft,L=London,C=US", notary: "O=Notary,L=Paris,C=US", amount: 99
 run vaultQuery contractStateType: com.template.states.TokenState
+
+nodes must be running......
+cd client ../gradlew runTemplateServer

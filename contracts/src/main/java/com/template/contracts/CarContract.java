@@ -52,7 +52,6 @@ public class CarContract implements Contract {
             if(!(requiredSigners.contains(manufacturerKey))) {
                 throw new IllegalArgumentException("Manufacturer must sign the tx");
             }
-
         }
     }
 

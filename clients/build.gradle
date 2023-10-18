@@ -46,7 +46,6 @@ task runTemplateServer(type: JavaExec, dependsOn: assemble) {
     args '--server.port=10050', '--config.rpc.host=localhost', '--config.rpc.port=10006', '--config.rpc.username=user1', '--config.rpc.password=test'
 }
 
-
 task runPartyAServer(type: JavaExec, dependsOn: jar) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.example.server.ServerKt'
@@ -55,7 +54,7 @@ task runPartyAServer(type: JavaExec, dependsOn: jar) {
 
 task runPartyBServer(type: JavaExec, dependsOn: jar) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'com.example.server.ServerKt'
+    main = 'com.template.webserver.Starter'
     args '--server.port=50006', '--config.rpc.host=localhost', '--config.rpc.port=10009', '--config.rpc.username=user1', '--config.rpc.password=test'
 }
 

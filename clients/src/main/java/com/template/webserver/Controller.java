@@ -1,10 +1,18 @@
 package com.template.webserver;
 
+import com.template.flows.ShipmentFlow;
 import net.corda.core.contracts.ContractState;
+import net.corda.core.identity.CordaX500Name;
+import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
+import net.corda.core.transactions.SignedTransaction;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
@@ -41,7 +49,7 @@ public class Controller {
 
     @GetMapping(value = "/addresses", produces = TEXT_PLAIN_VALUE)
     private String addresses() {
-        return proxy.nodeInfo().getAddresses().toString();
+        return "Address....";
     }
 
     @GetMapping(value = "/identities", produces = TEXT_PLAIN_VALUE)
@@ -74,5 +82,25 @@ public class Controller {
     @GetMapping(value = "/states", produces = TEXT_PLAIN_VALUE)
     private String states() {
         return proxy.vaultQuery(ContractState.class).getStates().toString();
+    }
+
+    @PostMapping(value = "createShipment", produces =  TEXT_PLAIN_VALUE, headers = "Content-Type = application/x-www-form-urlencoded")
+    public ResponseEntity<String> issueShipmentFlow(HttpServletRequest request) throws IllegalArgumentException {
+       try{
+           String model = request.getParameter("");
+           String owner = request.getParameter("O=Google,L=London,C=GB");
+
+               // Start the IOUIssueFlow. We block and waits for the flow to return.
+               SignedTransaction result = proxy.startTrackedFlowDynamic(ShipmentFlow.class, model, owner).getReturnValue().get();
+               // Return the response.
+               return ResponseEntity
+                       .status(HttpStatus.CREATED)
+                       .body("Transaction id "+ result.getId() +" committed to ledger.\n " + result.getTx().getOutput(0));
+               // For the purposes of this demo app, we do not differentiate by exception type.
+           } catch (Exception e) {
+               return ResponseEntity
+                       .status(HttpStatus.BAD_REQUEST)
+                       .body(e.getMessage());
+           }
     }
 }
