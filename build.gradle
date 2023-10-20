@@ -14,22 +14,26 @@ buildscript {//properties that you need to build the project
         log4j_version = constants.getProperty("log4jVersion")
         slf4j_version = constants.getProperty("slf4jVersion")
         corda_platform_version = constants.getProperty("platformVersion").toInteger()
-        //springboot
-        spring_boot_version = '2.0.2.RELEASE'
-        spring_boot_gradle_plugin_version = '2.0.2.RELEASE'
+        confidential_id_release_version = constants.getProperty("confidentialIdReleaseVersion")
+        confidential_id_release_group = constants.getProperty("confidentialIdReleaseGroup")
+        accounts_release_version = constants.getProperty("accountsLibVersion")
+        accounts_release_group = constants.getProperty("accountsLibReleaseGroup")
     }
 
     repositories {
         mavenLocal()
         mavenCentral()
         maven { url 'https://download.corda.net/maven/corda-releases' }
+        maven { url 'https://software.r3.com/artifactory/corda-lib-dev' }
+        maven { url 'https://software.r3.com/artifactory/corda-lib' }
+
     }
 
     dependencies {
         classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_gradle_plugin_version"
+      //  classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_gradle_plugin_version"
     }
 }
 
@@ -84,6 +88,10 @@ dependencies {
     cordaCompile "org.slf4j:jul-to-slf4j:$slf4j_version"
     cordaDriver "net.corda:corda-shell:4.9"
 
+    cordapp "$confidential_id_release_group:ci-workflows:$confidential_id_release_version"
+    cordapp "$tokens_release_group:tokens-workflows:$tokens_release_version"
+    cordapp "$tokens_release_group:tokens-selection:$tokens_release_version"
+    cordapp "$accounts_release_group:accounts-workflows:$accounts_release_version"
 }
 
 
@@ -99,6 +107,10 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         projectCordapp {
             deploy = false
         }
+        cordapp("$confidential_id_release_group:ci-workflows:$confidential_id_release_version")
+        cordapp("$accounts_release_group:accounts-contracts:$accounts_release_version")
+        cordapp("$accounts_release_group:accounts-workflows:$accounts_release_version")
+
         cordapp project(':contracts')
         cordapp project(':workflows')
         runSchemaMigration = true //This configuration is for any CorDapps with custom schema, We will leave this as true to avoid
